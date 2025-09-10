@@ -17,8 +17,8 @@ onMounted(() => {
       <p class="mt-4">Chargement...</p>
     </div>
     <v-alert v-else-if="characterStore.error" type="error" title="Erreur" :text="characterStore.error" variant="tonal"></v-alert>
-    <v-row v-else v-for="char in characterStore.characters" :key="char.id">
-        <v-btn class="profile-bar character-button justify-start pa-2" variant="text" block height="auto" rounded="lg">
+    <v-row v-else v-for="char in characterStore.characters" :key="char.id" >
+        <v-btn class="profile-bar character-button justify-start pa-2" variant="text" block height="auto" rounded="lg" @click="characterStore.selectCharacter(char.id)">
           <v-avatar size="40" class="mr-3">
             <v-img :src=char.picture>
             </v-img>

@@ -1,7 +1,9 @@
 <script setup>
 import Navigation from '../components/Navigation.vue';
 import Message from '../components/Message.vue';
-import { VApp, VAppBar, VMain, VContainer, VToolbarTitle } from 'vuetify/components';
+import { VApp, VAppBar, VContainer, VToolbarTitle } from 'vuetify/components';
+import { useCharacterStore } from '@/stores/characterStore';
+const characterStore = useCharacterStore();
 </script>
 
 
@@ -9,10 +11,11 @@ import { VApp, VAppBar, VMain, VContainer, VToolbarTitle } from 'vuetify/compone
   <v-app class="background">
     <Navigation />
     <v-app-bar elevation="1" color="transparent" style="appbar">
-        <v-avatar size="48">
-          <v-app-bar-nav-icon @click="drawer = !drawer" icon ="$vuetify"></v-app-bar-nav-icon>
+        <v-avatar size="32">
+            <v-img :src=characterStore.selectedCharacter?.picture>
+            </v-img>
         </v-avatar>
-      <v-toolbar-title>Nom du salon</v-toolbar-title>
+      <v-toolbar-title>{{ characterStore.selectedCharacter?.name }}</v-toolbar-title>
     </v-app-bar>
       <v-container fluid class="fill-height flex-column">
         <Message />

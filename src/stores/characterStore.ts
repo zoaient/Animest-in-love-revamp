@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import characterData from '../data/Characters.json' assert { type: 'json' };
+import { useConversationStore } from './conversationStore' 
 
 export interface Character {
   id: number
@@ -13,6 +14,7 @@ interface CharacterState {
   characters: Character[]
   isLoading: boolean
   error: string | null
+  selectedCharacterId: number | null
 }
 
 export const useCharacterStore = defineStore('characters', {
@@ -20,10 +22,17 @@ export const useCharacterStore = defineStore('characters', {
     characters: [], 
     isLoading: false,
     error: null,
+    selectedCharacterId: null,
   }),
   getters: {
     getCharacterById: (state) => (id: number) => {
       return state.characters.find(char => char.id === id)
+    },
+    selectedCharacter(state): Character | null {
+      if (state.selectedCharacterId === null) {
+        return null;
+      }
+      return state.characters.find(char => char.id === state.selectedCharacterId) || null;
     },
   },
   actions: {
@@ -41,5 +50,15 @@ export const useCharacterStore = defineStore('characters', {
         this.isLoading = false
       }
     },
+    selectCharacter(characterId: number | null) {
+      this.selectedCharacterId = characterId;
+      const conversationStore = useConversationStore();
+      if (characterId !== null) {
+        conversationStore.fetchConversation(characterId);
+      } else {
+        conversationStore.clearConversation();
+      }
+    },
+    
   },
 })
