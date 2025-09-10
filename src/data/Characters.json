@@ -1,0 +1,26 @@
+[
+    {
+        "id" :1,
+        "name" : "Katharine",
+        "color" : "Red",
+        "picture" : "src/assets/Pfp/katharine_pdp.png"
+    },
+    {
+        "id" :2,
+        "name" : "Oliver",
+        "color" : "Red",
+        "picture" : "src/assets/Pfp/oliver_pdp.png"
+    },
+    {
+        "id" :3,
+        "name" : "Ivy",
+        "color" : "Red",
+        "picture" : "src/assets/Pfp/ivy_pdp.png"
+    },
+    {
+        "id" :4,
+        "name" : "Arthur",
+        "color" : "Red",
+        "picture" : "src/assets/Pfp/arthur_pdp.png"
+    }
+]
