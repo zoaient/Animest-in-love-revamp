@@ -1,12 +1,12 @@
 // src/stores/conversationStore.ts
 import { defineStore } from 'pinia'
-import axios from 'axios' // On aura besoin d'un client HTTP comme Axios
+import axios from 'axios'
 
 export interface Message {
   id: number
   author: string
   text: string
-  avatarUrl?: string // L'avatar est optionnel ici
+  avatarUrl?: string 
 }
 
 interface ConversationState {
@@ -22,18 +22,12 @@ export const useConversationStore = defineStore('conversation', {
     error: null,
   }),
   actions: {
-    // L'action clé qui va appeler notre backend
     async fetchConversation(characterId: number) {
       this.isLoading = true
       this.error = null
-      this.messages = [] // On vide la conversation précédente
-
+      this.messages = [] 
       try {
-        // C'est ici que la magie opère !
-        // On fait un appel à notre future API backend.
         const response = await axios.get(`/api/conversations/${characterId}`)
-        
-        // On met à jour l'état avec les données reçues du backend
         this.messages = response.data
       } catch (err) {
         this.error = `Impossible de charger la conversation pour le personnage ${characterId}.`

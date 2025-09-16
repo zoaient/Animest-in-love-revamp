@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
-import characterData from '../data/Characters.json' assert { type: 'json' };
 import { useConversationStore } from './conversationStore' 
+import axios from 'axios'
 
 export interface Character {
-  id: number
   name: string
   color: string
   picture: string
@@ -14,7 +13,7 @@ interface CharacterState {
   characters: Character[]
   isLoading: boolean
   error: string | null
-  selectedCharacterId: number | null
+  selectedCharacterName: string | null
 }
 
 export const useCharacterStore = defineStore('characters', {
@@ -22,17 +21,17 @@ export const useCharacterStore = defineStore('characters', {
     characters: [], 
     isLoading: false,
     error: null,
-    selectedCharacterId: null,
+    selectedCharacterName: null,
   }),
   getters: {
-    getCharacterById: (state) => (id: number) => {
-      return state.characters.find(char => char.id === id)
+    getCharacterByName: (state) => (id: string) => {
+      return state.characters.find(char => char.name === id)
     },
     selectedCharacter(state): Character | null {
-      if (state.selectedCharacterId === null) {
+      if (state.selectedCharacterName === null) {
         return null;
       }
-      return state.characters.find(char => char.id === state.selectedCharacterId) || null;
+      return state.characters.find(char => char.name === state.selectedCharacterName) || null;
     },
   },
   actions: {
@@ -40,25 +39,27 @@ export const useCharacterStore = defineStore('characters', {
       this.isLoading = true
       this.error = null
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        this.characters = characterData as Character[];
-        console.log('Personnages chargés dans le store !', this.characters);
+        const response = await axios.get('/api/characters')
+        const fetchedCharacters = response.data as Character[];
+        this.characters = fetchedCharacters.map(char => ({
+          ...char,
+          resolvedPictureUrl: new URL(`../assets/${char.picture}`, import.meta.url).href
+        }));
       } catch (err) {
-        this.error = 'Erreur lors du chargement des personnages.'
         console.error(err)
       } finally {
         this.isLoading = false
       }
     },
-    selectCharacter(characterId: number | null) {
-      this.selectedCharacterId = characterId;
-      const conversationStore = useConversationStore();
-      if (characterId !== null) {
-        conversationStore.fetchConversation(characterId);
+    selectCharacter(character: Character | null) {
+      console.log(character)
+      if (character) {
+        this.selectedCharacterName = character.name;
+        console.log(`Personnage sélectionné : ${character.name}`);
       } else {
-        conversationStore.clearConversation();
+        this.selectedCharacterName = null;
+        console.log('Personnage désélectionné.');
       }
-    },
-    
-  },
+    }
+  }
 })
