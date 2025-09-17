@@ -1,0 +1,41 @@
+[
+    {
+        "id" :1,
+        "characters" : [
+            {"name" : "Arthur" , "picture" : "src/assets/Pfp/arthur_pdp.png"}
+        ],
+        "chatroom_name" : "test_convo",
+        "messages" : [
+            {
+                "id" :1,
+                "character": "Arthur",
+                "picture_or_text": "text",
+                "content" : "Coucou, ça va ?"
+            },
+            {
+                "id" :2,
+                "character": "Player",
+                "choices" : [
+                    {"id" :1, "text":"oui"},
+                    {"id" :2, "text":"non"}
+                ]
+            },
+            {
+                "id" :3,
+                "character": "Player",
+                "choices" : [
+                    {"id" :1, "text":"oui"},
+                    {"id" :2, "text":"non"}
+                ]
+            },
+            {
+                "id" :4,
+                "character": "Player",
+                "choices" : [
+                    {"id" :1, "text":"oui"},
+                    {"id" :2, "text":"non"}
+                ]
+            }
+        ]
+    }
+]

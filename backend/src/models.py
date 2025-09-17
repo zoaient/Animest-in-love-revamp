@@ -39,4 +39,17 @@ class Character(BaseModel):
     class Config:
         populate_by_name = True
         json_encoders = {ObjectId: str}
+
+class Answer(BaseModel):
+    id: int
+    text: str
         
+class Message(BaseModel):
+    id: int
+    character: str
+    picture_or_text: str | None = None
+    content: str | None = None
+    choices: list[Answer] | None = None 
+
+
+
