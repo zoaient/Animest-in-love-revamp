@@ -1,0 +1,40 @@
+[
+    {
+        "name" :"A",
+        "points" : [
+            {"name" : "Arthur" , "quantity" : 1},
+            {"name" : "b" , "quantity" : 1},
+            {"name" : "c" , "quantity" : 1},
+            {"name" : "d" , "quantity" : 1},
+            {"name" : "e" , "quantity" : 1}
+        ],
+        "history" : [
+            {
+                "chatroom_id" : 1,
+                "choices" : [1
+                ]
+            }
+        ],
+        "current_chatroom_id":2,
+        "current_message_id":1
+    },
+    {
+        "name" :"B",
+        "points" : [
+            {"name" : "Arthur" , "quantity" : 1},
+            {"name" : "b" , "quantity" : 1},
+            {"name" : "c" , "quantity" : 1},
+            {"name" : "d" , "quantity" : 1},
+            {"name" : "e" , "quantity" : 1}
+        ],
+        "history" : [
+            {
+                "chatroom_id" : 1,
+                "choices" : [2
+                ]
+            }
+        ],
+        "current_chatroom_id":3,
+        "current_message_id":1
+    }
+]

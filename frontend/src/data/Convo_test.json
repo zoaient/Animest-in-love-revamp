@@ -10,7 +10,9 @@
                 "id" :1,
                 "character": "Arthur",
                 "picture_or_text": "text",
-                "content" : "Coucou, ça va ?"
+                "content" : "Coucou, ça va ?",
+                "channel" : "Arthur",
+                "branch" : 0
             },
             {
                 "id" :2,
@@ -18,23 +20,45 @@
                 "choices" : [
                     {"id" :1, "text":"oui"},
                     {"id" :2, "text":"non"}
-                ]
+                ],
+                "channel" : "Arthur",
+                "branch" : 0
             },
             {
                 "id" :3,
-                "character": "Player",
-                "choices" : [
-                    {"id" :1, "text":"oui"},
-                    {"id" :2, "text":"non"}
-                ]
+                "character": "Arthur",
+                "picture_or_text": "text",
+                "content" : "Ah, relou",
+                "channel" : "Arthur",
+                "branch" : 1
             },
             {
                 "id" :4,
+                "character": "Arthur",
+                "picture_or_text": "text",
+                "content" : "Nickel",
+                "channel" : "Arthur",
+                "branch" : 2
+            },
+            {
+                "id" :5,
                 "character": "Player",
                 "choices" : [
                     {"id" :1, "text":"oui"},
                     {"id" :2, "text":"non"}
-                ]
+                ],
+                "channel" : "Global" ,
+                "branch": 0
+            },
+            {
+                "id" :6,
+                "character": "Player",
+                "choices" : [
+                    {"id" :1, "text":"oui"},
+                    {"id" :2, "text":"non"}
+                ],
+                "channel" : "Arthur",
+                "branch" : 0
             }
         ]
     }
