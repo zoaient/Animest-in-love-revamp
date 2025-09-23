@@ -5,3 +5,6 @@ comme ca une réponse peut se trigger sur d'autres trucs, t'a capté ?
 Le branchement se ferait ensuite avec une clé "path" qui serait selectionnée 
 
 Dans le gamestate , il y'a autant de clés que de persos 
+
+
+todo : taille responsive de header bisou

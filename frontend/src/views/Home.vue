@@ -1,6 +1,5 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import Opening from '../components/Opening.vue';
 import Headere from '../components/Header.vue'
 const router = useRouter();
 const startGame = () => {
@@ -11,17 +10,27 @@ const startGame = () => {
 
 <template>
   <Headere />
-  <div class="Home">
-  <Opening />
-    <h1>QUOICOU</h1>
-    <div class="menu-buttons">
-      <button @click="startGame">Nouvelle Partie</button>
-      <button @click="loadGame">Charger Partie</button>
+  <v-app class="background">
+    <div>
+      COUCOU CAA VA 
     </div>
-  </div>
+  </v-app>
 </template>
 
+<style scoped>
+.background :deep(.v-application__wrap){
+  background-image:
 
+  url('../assets/Backgrounds/fond_5.png'); 
+  
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: rgba(255, 255, 255, 255) !important;  
+}
+
+</style>
 
 
   

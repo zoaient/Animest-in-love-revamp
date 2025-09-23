@@ -1,37 +1,47 @@
 <script setup>
-const logoUrl = new URL('../Logo_slash_zoaient_sans.png', import.meta.url).href;
+import { ref } from 'vue';
+const logoUrl = new URL('../assets/Logo/Logo_slash_zoaient_avec.png', import.meta.url).href;
+const navItems = ref([
+  { title: 'À Propos', path: '/about' },
+  { title: 'Blog', path: '/blog' },
+  { title: 'Contact', path: '/contact' },
+]);
 </script>
 
-
 <template>
-<header class="header">
-    <v-app-bar elevation="1" color="transparent" style="appbar" >
-      <v-img :src="logoUrl">  
-      </v-img>
-    </v-app-bar>        
-</header>
+  <header class="header d-flex align-center justify-space-between pa-4">
+    <v-img :src="logoUrl" max-width="360" class="logo-img"></v-img>
+    <div class="nav-buttons">
+      <v-btn v-for="item in navItems" :key="item.title" :to="item.path" variant="text" class="mx-2">
+        {{ item.title }}
+      </v-btn>
+    </div>
+  </header>
 </template>
+
 
 <style scoped>
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #8E143C;
-    color: white;
-    padding: 0.5rem 0;
-    text-align: center;
-    z-index: 1000;
-    height: 7%;
+  height: 100px; 
+  background-color: rgba(255, 255, 255, 0.05); 
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-image: 
+  url('../assets/Backgrounds/0.gif'); 
+  background-position: center center;
+  background-repeat: repeat;
+  background-attachment: fixed;
 }
 
-
-.header-title {
-  font-size: clamp(18px, 2.5vw, 32px);
+.logo-img {
+  cursor: pointer;
 }
-.header-nav a {
-  font-size: clamp(14px, 1.8vw, 22px);
-  margin-left: 20px;
+
+.nav-buttons .v-btn {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: normal;
 }
 </style>
+
+  
