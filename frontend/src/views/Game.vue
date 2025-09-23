@@ -10,18 +10,19 @@ const characterStore = useCharacterStore();
 <template>
   <v-app class="background">
     <Navigation />
-    <v-app-bar elevation="1" color="transparent" style="appbar">
-        <v-avatar size="32">
+    <v-app-bar elevation="1" color="transparent" style="appbar" >
+        <v-avatar size="32" class="ml-4">
             <v-img :src=characterStore.selectedCharacter?.picture>
             </v-img>
         </v-avatar>
       <v-toolbar-title>{{ characterStore.selectedCharacter?.name }}</v-toolbar-title>
     </v-app-bar>
-      <v-container fluid class="fill-height flex-column">
-        <Message />
-      </v-container>
+      <Message />
   </v-app>
 </template>
+
+
+
 
 
 <style scoped>

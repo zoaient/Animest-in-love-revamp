@@ -33,6 +33,12 @@ export const useCharacterStore = defineStore('characters', {
       }
       return state.characters.find(char => char.name === state.selectedCharacterName) || null;
     },
+    characterMap(state): { [name: string]: Character } {
+      return state.characters.reduce((map, char) => {
+        map[char.name] = char;
+        return map;
+      }, {} as { [name: string]: Character });
+    },
   },
   actions: {
     async fetchCharacters() {

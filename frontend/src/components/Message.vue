@@ -1,128 +1,74 @@
 <script setup>
-import { ref, watch, nextTick, onMounted } from 'vue';
-const pfpUrl = new URL('../assets/Pfp/zouaient.jpg', import.meta.url).href;
-const messages = ref([
-  { 
-    id: 1, 
-    author: 'A', 
-    avatarUrl: pfpUrl, 
-    text: 'QUOICOUUUUUUUUUUUU',
-    timestamp: '10:30' 
-  },
-  { 
-    id: 2, 
-    author: 'B', 
-    avatarUrl: pfpUrl, 
-    text: 'waaaaaaahahahaaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahhahwaabaaahh',
-    timestamp: '10:31'
-  },
-  { 
-    id: 3, 
-    author: 'C', 
-    avatarUrl: pfpUrl, 
-    text: 'Carrément',
-    timestamp: '10:32'
-  },
-  { 
-    id: 4, 
-    author: 'D', 
-    avatarUrl: pfpUrl, 
-    text: 'Bonjour à tous.',
-    timestamp: '10:35'
-  },
-  { 
-    id: 5, 
-    author: 'A', 
-    avatarUrl: pfpUrl, 
-    text: 'QUOICOUUUUUUUUUUUU',
-    timestamp: '10:30' 
-  },
-  { 
-    id: 6, 
-    author: 'B', 
-    avatarUrl: pfpUrl, 
-    text: 'waaaaaaahahahaaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahaaaaahahahahahwaabaaahhahwaabaaahh',
-    timestamp: '10:31'
-  },
-  { 
-    id: 7, 
-    author: 'C', 
-    avatarUrl: pfpUrl, 
-    text: 'Carrément',
-    timestamp: '10:32'
-  },
-  { 
-    id: 8, 
-    author: 'D', 
-    avatarUrl: pfpUrl, 
-    text: 'Bonjour à tous.',
-    timestamp: '10:35'
-  },
-  { 
-    id: 9, 
-    author: 'C', 
-    avatarUrl: pfpUrl, 
-    text: 'Carrément',
-    timestamp: '10:32'
-  },
-  { 
-    id: 10, 
-    author: 'D', 
-    avatarUrl: pfpUrl, 
-    text: 'Bonjour à tous.',
-    timestamp: '10:35'
-  },
-  { 
-    id: 11, 
-    author: 'FINAL', 
-    avatarUrl: pfpUrl, 
-    text: 'Yataaaa !!!',
-    timestamp: '10:35'
-  },
-]);
+import { ref, watch, nextTick, onMounted, computed } from 'vue'; 
+import { useConversationStore } from '@/stores/conversationStore';
+import { useCharacterStore } from '@/stores/characterStore'
 
-const messagesContainerRef = ref(null);
+const characterStore = useCharacterStore();
+const conversationStore = useConversationStore();
+const selectedCharacter = computed(() => characterStore.selectedCharacter);
 
+const history = computed(() => conversationStore.history);
+const characters = computed(() => characterStore.characterMap);
+const messagesContainerRef = ref<HTMLDivElement | null>(null); 
 const scrollToBottom = () => {
   const container = messagesContainerRef.value;
   if (container) {
-    container.scrollTop = container.scrollHeight;
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  }
+  if (characterStore.characters.length === 0) {
+    characterStore.fetchCharacters();
   }
 };
 
-watch(messages, () => {
+watch(history, () => {
   nextTick(() => {
     scrollToBottom();
   });
-}, { deep: true }); 
+}, { deep: true });
+
+watch(selectedCharacter, (newCharacter, oldCharacter) => {
+  if (newCharacter?.name === oldCharacter?.name) {
+    return;
+  }
+  
+  if (newCharacter) {
+    console.log(`Le personnage sélectionné a changé pour : ${newCharacter.name}. Chargement de son historique...`);
+    conversationStore.fetchHistory('B',newCharacter.name).then(() => {
+      scrollToBottom();
+    });
+  } else {
+    conversationStore.clearConversation();
+  }
+}, { immediate: true }); 
 
 onMounted(() => {
-  scrollToBottom();
+  conversationStore.fetchHistory('B', 'Arthur').then(() => {
+    scrollToBottom();
+  });
 });
 </script>
 
-<template>    
-<v-main class="dark-main-content" >
+<template>
+<v-main>    
   <v-container fluid class="fill-height pa-0">
     <div class="chat-container d-flex flex-column fill-height">
       <div class="messages-list flex-grow-1" ref="messagesContainerRef">
         <v-list lines="three" class="bg-transparent ">
-          <v-list-item v-for="message in messages" :key="message.id" class="message-item">
+          <v-list-item v-for="message in history" :key="message.id" class="message-item">
             <template v-slot:prepend>
-              <v-avatar color="primary">
-                <v-img :src="message.avatarUrl" :alt="message.author">
-                </v-img>
+              <v-avatar color="primary" :image="characters[message.character]?.picture">
               </v-avatar>
             </template>
-
             <v-list-item-title class="font-weight-bold">
-              {{ message.author }}
-              <span class="text-caption text-grey ml-2">{{ message.timestamp }}</span>
+              {{ message.character }}
+              <span class="text-caption text-grey ml-2">10h23</span>
             </v-list-item-title>
-
-            <v-list-item-subtitle class="message-text">
-              {{ message.text }}
+            <v-list-item-subtitle class="message-text" v-if="message.picture_or_text === 'text'">
+              {{ message.content }}
             </v-list-item-subtitle>
+            <v-list-item-subtitle class="message-text" v-if="message.picture_or_text === 'picture'">
+              {{ message.content }}
+            </v-list-item-subtitle>            
           </v-list-item>
         </v-list>
       </div>
@@ -148,13 +94,15 @@ onMounted(() => {
 
 .dark-main-content{
     width: 100%;
+    
 }
 .messages-list {
   overflow-y: auto;
-  padding: 16px;
   height: 0;
   flex-grow: 1;
+
 }
+
 
 .message-item {
   margin-bottom: 12px;

@@ -1,44 +1,42 @@
-// src/stores/conversationStore.ts
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-export interface Message {
-  id: number
-  author: string
-  text: string
-  avatarUrl?: string 
+export interface Choice {
+  id: number;
+  text: string;
 }
 
-interface ConversationState {
-  messages: Message[]
-  isLoading: boolean
-  error: string | null
+export interface Message {
+  id: number;
+  character: string;
+  picture_or_text: 'text' | 'image' | null;
+  content: string | null;
+  choices: Choice[] | null;
 }
+
 
 export const useConversationStore = defineStore('conversation', {
-  state: (): ConversationState => ({
-    messages: [],
+  state: () => ({
+    history: [] as Message[],
     isLoading: false,
-    error: null,
   }),
   actions: {
-    async fetchConversation(characterId: number) {
-      this.isLoading = true
-      this.error = null
-      this.messages = [] 
+    async fetchHistory(player_name: string, channel_name: string) {
+      this.isLoading = true;
       try {
-        const response = await axios.get(`/api/conversations/${characterId}`)
-        this.messages = response.data
-      } catch (err) {
-        this.error = `Impossible de charger la conversation pour le personnage ${characterId}.`
-        console.error(err)
+        const response = await axios.get(`/api/history/${player_name}/${channel_name}`);
+        this.history = response.data;
+      } catch (error) {
+        console.error("Erreur lors du chargement de l'historique:", error);
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
     },
-    
+    playerMadeChoice(choice: Choice) {
+      console.log(`Le joueur a choisi : "${choice.text}" (ID: ${choice.id})`);
+    },
     clearConversation() {
-      this.messages = [];
+      this.history = [];
     }
-  },
-})
+  }
+});
