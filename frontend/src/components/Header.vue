@@ -22,7 +22,7 @@ const navItems = ref([
 
 <style scoped>
 .header {
-  height: 100px; 
+  height: 80px; 
   background-color: rgba(255, 255, 255, 0.05); 
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
