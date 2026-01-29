@@ -11,12 +11,34 @@
         "history" : [
             {
                 "chatroom_id" : 1,
-                "choices" : [1
+                "choices" : [
+                    {   
+                        "channel":"Arthur",
+                        "choice":1
+                    },
+                    {
+                        "channel":"Global",
+                        "choice":2
+                    },
+                    {
+                        "channel":"Arthur",
+                        "choice":1
+                    }
+                ]
+            },
+            {
+                "chatroom_id" : 2,
+                "choices" : [
+                    {
+                        "channel":"Arthur",
+                        "choice":2
+                    }
                 ]
             }
         ],
         "current_chatroom_id":2,
-        "current_message_id":1
+        "current_message_id":7,
+        "id_of_last_choice":5
     },
     {
         "name" :"B",
@@ -36,6 +58,7 @@
             }
         ],
         "current_chatroom_id":3,
-        "current_message_id":1
+        "current_message_id":7,
+        "id_of_last_choice":5
     }
 ]

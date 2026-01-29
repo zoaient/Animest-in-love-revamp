@@ -16,6 +16,13 @@ const characterStore = useCharacterStore();
             </v-img>
         </v-avatar>
       <v-toolbar-title>{{ characterStore.selectedCharacter?.name }}</v-toolbar-title>
+      <v-spacer />
+        <v-btn size="45" class="ma-1" icon="mdi-pause">
+        </v-btn>
+        <v-btn size="45" class="ma-1" icon="mdi-fast-forward">
+        </v-btn>
+        <v-btn size="45" class="ma-1" icon="mdi-skip-backward">
+        </v-btn>
     </v-app-bar>
       <Message />
   </v-app>
@@ -38,6 +45,9 @@ const characterStore = useCharacterStore();
   background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
+.clamped-logo-img {
+  width: clamp(30px, 7vw, 80px);
+}
 
 
 </style>

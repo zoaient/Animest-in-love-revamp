@@ -45,11 +45,10 @@ class Answer(BaseModel):
     text: str
         
 class Message(BaseModel):
-    id: int
     character: str
-    picture_or_text: str | None = None
-    content: str | None = None
-    choices: list[Answer] | None = None 
+    content: str | None = None 
+    channel: str | None = None
+    choices: list[Answer] | None = None
 
 
 

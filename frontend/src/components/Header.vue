@@ -1,10 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 const logoUrl = new URL('../assets/Logo/Logo_slash_zoaient_avec.png', import.meta.url).href;
+const gameIconUrl = new URL('../assets/Logo/animest_logo.png', import.meta.url).href;
 const navItems = ref([
+
   { title: 'À Propos', path: '/about' },
   { title: 'Blog', path: '/blog' },
-  { title: 'Contact', path: '/contact' },
 ]);
 </script>
 
@@ -14,6 +15,9 @@ const navItems = ref([
     <div class="nav-buttons">
       <v-btn v-for="item in navItems" :key="item.title" :to="item.path" variant="text" class="mx-2">
         {{ item.title }}
+      </v-btn>
+      <v-btn :to="'/game'" variant="image" class="mx-2">
+        <v-img :src="gameIconUrl"  class="clamped-logo-img"></v-img>
       </v-btn>
     </div>
   </header>
@@ -35,6 +39,10 @@ const navItems = ref([
 
 .logo-img {
   cursor: pointer;
+}
+
+.clamped-logo-img {
+  width: clamp(30px, 7vw, 80px);
 }
 
 .nav-buttons .v-btn {

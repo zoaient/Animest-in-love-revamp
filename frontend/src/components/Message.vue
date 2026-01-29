@@ -72,15 +72,6 @@ onMounted(() => {
           </v-list-item>
         </v-list>
       </div>
-
-      <div class="message-input-area pa-2">
-        <v-text-field
-          label="Écrire un message..."
-          variant="solo"
-          hide-details
-          append-inner-icon="mdi-send"
-        ></v-text-field>
-      </div>
     </div>
   </v-container>
 </v-main>
