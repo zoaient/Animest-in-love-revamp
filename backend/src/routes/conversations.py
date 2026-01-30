@@ -7,21 +7,28 @@ from pymongo import ReturnDocument
 router = APIRouter()
 
 
-@router.get("/send/{player_name}", response_model=Message) #Envoi du prochain message a afficher  
+@router.get("/send/{player_name}", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
 def send_next_message(player_name: str):
     current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]
     current_message_id = gamestates_collection.find_one({"name": player_name})["current_message_id"]
     chatroom_messages = get_chatroom_messages(current_chatroom_id)
+    player_history = get_player_history(player_name)
+    current_branch = player_history[-1]["choices"][-1]["choice"] if player_history else 0 #peut etre directement écrire la branche en cours quelque part en sauvegarde
     count=0
     for message in chatroom_messages:
         if count != current_message_id:
             count+=1
         else:
             increment_current_message_id(player_name)
-            if message["character"] != "Player":
-                return Message(character=message["character"], content=message["content"], channel=message["channel"])
-            else:
-                return Message(character=message["character"], choices=message["choices"], channel=message["channel"])
+            if message["branch"] != current_branch and message["branch"] != 0:
+                count+=1
+                current_message_id += 1
+            else: 
+                if message["character"] != "Player":
+                    return Message(character=message["character"], content=message["content"], channel=message["channel"])
+                else:
+                    return Message(character=message["character"], choices=message["choices"], channel=message["channel"])
+
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No more messages in this chatroom")
 
 def increment_current_message_id(player_name: str):
@@ -33,7 +40,22 @@ def increment_current_message_id(player_name: str):
 
 @router.get("/recv/{player_name}/{channel_name}/{answer}")
 def receive_player_answer(player_name: str, channel_name:str, answer :int):
-    return 
+    player = gamestates_collection.find_one({"name": player_name})
+    if not player:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
+    new_choice = {"channel": channel_name, "choice": int(answer)}
+    history = player.get("history", [])
+    if not isinstance(history, list):
+        history = []
+    if not history:
+        new_entry = {
+            "chatroom_id": player.get("current_chatroom_id"),
+            "choices": [new_choice]
+        }
+        gamestates_collection.update_one({"name": player_name}, {"$push": {"history": new_entry}})
+
+
+
 
 @router.get("/history/full/{player_name}/{channel_name}", response_model=List[Message])
 def get_full_history(player_name :str, channel_name :str) -> List[Message]: #get de tout les messages d'une conversation donnée jusqu'au dernier choix.
@@ -45,6 +67,23 @@ def get_full_history(player_name :str, channel_name :str) -> List[Message]: #get
         messages_history.extend(get_messages(messages, channel_name, choices_history))
     messages_history.extend(get_last_messages(player_name,channel_name))
     return messages_history
+
+
+
+@router.get("/history/end/{player_name}")
+def end_chatroom(player_name: str):
+    current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]
+    gamestates_collection.update_one(
+        {"name": player_name},
+        {
+            "$set": {
+                "current_chatroom_id": current_chatroom_id + 1,
+                "current_message_id": 0,
+                "id_of_last_choice": 0
+            }
+        }
+    )
+    return {"message": f"Player {player_name} has ended chatroom {current_chatroom_id}."}
 
 def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoie les messages après le dernier choix jusqu'au message actuel dans la sauvegarde
     current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]
@@ -99,77 +138,3 @@ def get_player_history(player_name: str) -> List[dict]: # Renvoie l'historique c
 
 def is_text(content: str) -> bool: 
     return content.startswith("src/assets/")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@router.get("/next_messages/{player_name}/{branch_choice}", response_model=List[Message]) #Ici, tout envoyer en fonction de la branche selectionnée, la fonction va de choix en choix , get le gamestate aussi , s'occupe aussi de maj l'historique
-def get_next_messages(player_name, branch_choice):
-    player_gamestate = list(gamestates_collection.find({"name": player_name}))
-    current_chatroom_id = player_gamestate[0]["current_chatroom_id"] 
-    current_message_id = player_gamestate[0]["current_message_id"] -1
-    chatroom_text = list(messages_collection.find({"id" : int(current_chatroom_id)-1}))
-    all_messages=chatroom_text[0]["messages"]  
-    Player_found = False
-    displayed_messages = []
-    while current_message_id<len(all_messages) and not Player_found :
-        if all_messages[current_message_id]["character"]=="Player":
-            Player_found = True
-        if all_messages[current_message_id]["branch"]==int(branch_choice) or not all_messages[current_message_id]["branch"]:     
-            displayed_messages.append(all_messages[current_message_id])
-        current_message_id+=1
-    current_message_id+=1
-
-    return displayed_messages
-
-
-@router.get("/history/{player_name}/{channel_name}", response_model=List[Message])
-def get_history(channel_name,player_name):
-    player_gamestate = list(gamestates_collection.find({"name": player_name}))
-    player_history =player_gamestate[0]["history"]
-    messages_history=[]
-
-    for history in player_history:
-        messages =get_chatroom_messages(history["chatroom_id"])
-        past_choices =history["choices"]
-        current_branch = past_choices[0]
-        branch_counter = 0
-        has_branch_started =False
-        for message in messages:
-            if message["channel"] ==channel_name:
-                if  message["branch"]==current_branch or not message["branch"]:
-                    if message["character"]!="Player":
-                        messages_history.append(message)
-                    else:
-                        player_choices = message["choices"]
-                        player_message={'id': 0, 'character': 'Player', 'picture_or_text': 'text', 'content': '', 'channel': channel_name, 'branch': 0}
-                        for choice in player_choices:
-                            if choice['id']==current_branch:
-                                player_message['content']=choice['text']
-                        messages_history.append(player_message)
-                    has_branch_started=True
-                elif has_branch_started:
-                    has_branch_started=False
-                    if(branch_counter+1<len(past_choices)):
-                        branch_counter+=1
-                        current_branch=past_choices[branch_counter]
-    return messages_history
