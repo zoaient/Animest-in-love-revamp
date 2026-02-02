@@ -37,6 +37,18 @@ export const useConversationStore = defineStore('conversation', {
     },
     clearConversation() {
       this.history = [];
+    },
+    async new_message(player_name: string, channel_name: string) {
+      console.log("New message requested");
+      this.isLoading = true;
+      try{
+        const response = await axios.get(`/api/send/${player_name}`);
+        return response.data;
+        }  catch (error) {
+        console.error("Erreur lors de la demande de nouveau message:", error);
+        } finally {
+        this.isLoading = false;
+      }
     }
   }
 });

@@ -47,18 +47,26 @@ def receive_player_answer(player_name: str, channel_name:str, answer :int):
     history = player.get("history", [])
     if not isinstance(history, list):
         history = []
-    if not history:
+    current_chatroom_id = player.get("current_chatroom_id")
+    if history and isinstance(history[-1], dict) and history[-1].get("chatroom_id") == current_chatroom_id:
+        last_index = len(history) - 1
+        field = f"history.{last_index}.choices"
+        gamestates_collection.update_one({"name": player_name}, {"$push": {field: new_choice}})
+    else:
+        # Sinon on ajoute une nouvelle entrée history contenant ce choix
         new_entry = {
-            "chatroom_id": player.get("current_chatroom_id"),
+            "chatroom_id": current_chatroom_id,
             "choices": [new_choice]
         }
         gamestates_collection.update_one({"name": player_name}, {"$push": {"history": new_entry}})
 
+    new_last_choice_id = gamestates_collection.find_one({"name": player_name})["current_message_id"]
+    gamestates_collection.update_one({"name": player_name}, {"$set": {"id_of_last_choice": new_last_choice_id}})
 
 
-
-@router.get("/history/full/{player_name}/{channel_name}", response_model=List[Message])
+@router.get("/history/{player_name}/{channel_name}", response_model=List[Message])
 def get_full_history(player_name :str, channel_name :str) -> List[Message]: #get de tout les messages d'une conversation donnée jusqu'au dernier choix.
+    print(player_name, channel_name)
     player_history = get_player_history(player_name)
     messages_history: List[Message] = []
     for history in player_history:
@@ -93,7 +101,8 @@ def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoi
     messages_after_choice: List[Message] = []
     count=0
     for message in chatroom_messages:
-        if message["channel"] == channel_name and count> id_of_last_choice and count <= current_message_id:
+        if message["channel"] == channel_name and count> id_of_last_choice-1 and count <= current_message_id-1:
+            print(message)
             messages_after_choice.append(Message(character=message["character"], content=message["content"]))
         count+=1
     return messages_after_choice
@@ -104,6 +113,7 @@ def get_chatroom_messages(chatroom_id): # Renvoie tous les messages d'une chatro
 
 def get_choices_history(channel_name: str, choices: List[dict]) -> List[int]: #get l'historique des choix pour une conversation (enleve les choices qui ne sont pas liées a la conversation donnée)
     choices_history = []
+    print(choices)
     for choice in choices:
         if choice["channel"] == channel_name:
             choices_history.append(choice["choice"])
@@ -113,7 +123,6 @@ def get_messages(messages: List[Message], channel_name: str, choices_history: Li
     current_branch = 0
     messages_history: List[Message] = []
     for message in messages:
-        print(choices_history)
         if message["channel"] == channel_name and choices_history !=[]:   
             if (message["branch"] == current_branch or message["branch"] == 0) and message["character"] != "Player":
                 messages_history.append(Message(character=message["character"], content=message["content"]))

@@ -55,3 +55,21 @@ def get_player_points(player_name: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
     points = player.get("points", 0)
     return {"player_name": player_name, "points": points}
+
+@router.get("/message_id/{player_name}")
+def get_player_message_id(player_name: str):
+    player = gamestates_collection.find_one({"name": player_name})
+    if not player:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
+    message_id = player.get("current_message_id", 0)
+    return {"player_name": player_name, "message_id": message_id}
+
+@router.get("/choices/{player_name}")
+def get_player_choices(player_name: str):
+    player = gamestates_collection.find_one({"name": player_name})
+    if not player:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
+    history = player.get("history", [])
+    if not isinstance(history, list):
+        history = []
+    return {"player_name": player_name, "choices_history": history}

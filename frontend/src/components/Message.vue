@@ -33,7 +33,7 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
   
   if (newCharacter) {
     console.log(`Le personnage sélectionné a changé pour : ${newCharacter.name}. Chargement de son historique...`);
-    conversationStore.fetchHistory('B',newCharacter.name).then(() => {
+    conversationStore.fetchHistory('A',newCharacter.name).then(() => {
       scrollToBottom();
     });
   } else {
@@ -42,7 +42,7 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
 }, { immediate: true }); 
 
 onMounted(() => {
-  conversationStore.fetchHistory('B', 'Arthur').then(() => {
+  conversationStore.fetchHistory('A', 'Arthur').then(() => {
     scrollToBottom();
   });
 });
@@ -63,12 +63,9 @@ onMounted(() => {
               {{ message.character }}
               <span class="text-caption text-grey ml-2">10h23</span>
             </v-list-item-title>
-            <v-list-item-subtitle class="message-text" v-if="message.picture_or_text === 'text'">
+            <v-list-item-subtitle class="message-text">
               {{ message.content }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle class="message-text" v-if="message.picture_or_text === 'picture'">
-              {{ message.content }}
-            </v-list-item-subtitle>            
+            </v-list-item-subtitle>         
           </v-list-item>
         </v-list>
       </div>
