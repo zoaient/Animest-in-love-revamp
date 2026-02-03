@@ -19,7 +19,7 @@ const characterStore = useCharacterStore();
         </v-avatar>
       <v-toolbar-title>{{ characterStore.selectedCharacter?.name }}</v-toolbar-title>
       <v-spacer />
-        <v-btn size="45" class="ma-1" icon="mdi-pause" @click="conversationStore.new_message()">
+        <v-btn size="45" class="ma-1" icon="mdi-pause" @click="conversationStore.new_message('A','Arthur')">
         </v-btn>
         <v-btn size="45" class="ma-1" icon="mdi-fast-forward">
         </v-btn>

@@ -100,12 +100,16 @@ def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoi
     chatroom_messages = get_chatroom_messages(current_chatroom_id)
     messages_after_choice: List[Message] = []
     count=0
+    last_choice = get_last_choice(player_name)
     for message in chatroom_messages:
-        if message["channel"] == channel_name and count> id_of_last_choice-1 and count <= current_message_id-1:
+        if message["channel"] == channel_name and count> id_of_last_choice-1 and count <= current_message_id-1 and (message["branch"] == last_choice or message["branch"] == 0):
             print(message)
-            messages_after_choice.append(Message(character=message["character"], content=message["content"]))
+            messages_after_choice.append(Message(character=message["character"], content=message["content"], channel=message["channel"] ))
         count+=1
     return messages_after_choice
+
+
+
 
 def get_chatroom_messages(chatroom_id): # Renvoie tous les messages d'une chatroom
     return list(messages_collection.find({"id":chatroom_id})[0]["messages"])
@@ -125,12 +129,12 @@ def get_messages(messages: List[Message], channel_name: str, choices_history: Li
     for message in messages:
         if message["channel"] == channel_name and choices_history !=[]:   
             if (message["branch"] == current_branch or message["branch"] == 0) and message["character"] != "Player":
-                messages_history.append(Message(character=message["character"], content=message["content"]))
+                messages_history.append(Message(character=message["character"], content=message["content"], channel=message["channel"]))
             elif message["character"] == "Player":
                 current_branch = choices_history.pop(0)
                 content=message["choices"]
                 choice=content[current_branch -1]["text"]
-                messages_history.append(Message(character=message["character"], content=choice))    
+                messages_history.append(Message(character=message["character"], content=choice, channel=message["channel"]))    
     return messages_history
 
 
@@ -143,7 +147,13 @@ def get_player_history(player_name: str) -> List[dict]: # Renvoie l'historique c
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Invalid history format")
     return history
 
-
+def get_last_choice(player_name: str) -> int:
+    player_gamestate = gamestates_collection.find_one({"name": player_name})
+    if not player_gamestate:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
+    choices= player_gamestate.get("history", [])
+    last_choice = choices[-1]["choices"][-1]["choice"] if choices else 0
+    return last_choice
 
 def is_text(content: str) -> bool: 
     return content.startswith("src/assets/")

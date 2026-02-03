@@ -8,6 +8,12 @@ const conversationStore = useConversationStore();
 const selectedCharacter = computed(() => characterStore.selectedCharacter);
 
 const history = computed(() => conversationStore.history);
+const currentChannel = computed(() => selectedCharacter.value?.name ?? null);
+const filteredHistory = computed(() => {
+  if (!currentChannel.value) return history.value;
+  return history.value.filter(m => m.channel === currentChannel.value);
+});
+
 const characters = computed(() => characterStore.characterMap);
 const messagesContainerRef = ref<HTMLDivElement | null>(null); 
 const scrollToBottom = () => {
@@ -54,7 +60,7 @@ onMounted(() => {
     <div class="chat-container d-flex flex-column fill-height">
       <div class="messages-list flex-grow-1" ref="messagesContainerRef">
         <v-list lines="three" class="bg-transparent ">
-          <v-list-item v-for="message in history" :key="message.id" class="message-item">
+          <v-list-item v-for="message in filteredHistory" :key="message.id" class="message-item">
             <template v-slot:prepend>
               <v-avatar color="primary" :image="characters[message.character]?.picture">
               </v-avatar>
