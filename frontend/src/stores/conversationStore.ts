@@ -19,6 +19,7 @@ export const useConversationStore = defineStore('conversation', {
   state: () => ({
     history: [] as Message[],
     isLoading: false,
+    isFinished: false,
   }),
   actions: {
     async fetchHistory(player_name: string, channel_name: string) {
@@ -37,9 +38,11 @@ export const useConversationStore = defineStore('conversation', {
     },
     clearConversation() {
       this.history = [];
+      this.isFinished = false;
     },
     async new_message(player_name: string, channel_name: string) {
       this.isLoading = true;
+      this.isFinished = false;
       const tempId = Date.now();
       const tempMsg: Message = {
         id: tempId,
@@ -70,7 +73,7 @@ export const useConversationStore = defineStore('conversation', {
           channel,
     
         };
-        //TODO mieux gérer gerer le cas player et le systeme de notifications 
+        //TODO notifications
         
         const idx = this.history.findIndex(m => m.id === tempId);
 
@@ -89,10 +92,14 @@ export const useConversationStore = defineStore('conversation', {
 
         return finalMsg;
 
-      } catch (error) {
+      } catch (error: any) {
         const idx = this.history.findIndex(m => m.id === tempId);
         if (idx !== -1) this.history.splice(idx, 1);
+        if (error.response && error.response.status === 404) {
+          this.isFinished = true;
+        }
         throw error;
+        
       } finally {
         this.isLoading = false;
       }
@@ -110,9 +117,9 @@ export const useConversationStore = defineStore('conversation', {
     },
     async send_choice(player_name: string, channel_name: string, answer : number, choice_text?: string){
       this.isLoading=true;
-      const playerMsg: Message = {
+      const playerMsg: Message = {//peut etre totalement inutile, a voir.
         id: Date.now(),
-        character: 'Playerrr',
+        character: 'Player', 
         content: choice_text ?? String(answer),
         choices: null,
         channel: channel_name,
@@ -125,6 +132,17 @@ export const useConversationStore = defineStore('conversation', {
         const idx = this.history.findIndex(m => m.id === playerMsg.id);
         if (idx !== -1) this.history.splice(idx, 1);
         throw error;
+      }finally{
+        this.isLoading=false;
+      }
+    },
+    async end_conversation(player_name: string){
+      this.isLoading=true;
+      try{
+        await axios.get(`/api/end/${player_name}`);
+        this.isFinished = false;
+      }catch(error){
+        console.error("Erreur lors de la fin de la conversation:", error);
       }finally{
         this.isLoading=false;
       }

@@ -3,6 +3,7 @@ import { ref, watch, nextTick, onMounted, computed } from 'vue';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useCharacterStore } from '@/stores/characterStore'
 
+const isFinished = computed  (()=> conversationStore.isFinished);
 const characterStore = useCharacterStore();
 const conversationStore = useConversationStore();
 const selectedCharacter = computed(() => characterStore.selectedCharacter);
@@ -94,6 +95,7 @@ onMounted(() => {
           </v-list-item>
         </v-list>
       </div>
+
     </div>
       <div v-if="lastMessage && lastMessage.choices && lastMessage.choices.length" class="bottom-choices pa-2">
         <v-row justify="center">
@@ -102,6 +104,18 @@ onMounted(() => {
           </v-btn>
         </v-row>
       </div>
+
+    <div v-if="isFinished" class="bottom-choices pa-2">
+      <v-row justify="center">
+        <v-chip color="error" variant="outlined" class="mb-2">Fin de la conversation</v-chip>
+      </v-row>
+      <v-row justify="center">
+        <v-btn color="secondary" prepend-icon="mdi-check-all" @click="conversationStore.end_conversation('A')">
+          Terminer l'histoire
+        </v-btn>
+      </v-row>
+    </div>
+
   </v-container>
 </v-main>
 </template>

@@ -5,7 +5,7 @@ from src.models import Message
 from pymongo import ReturnDocument
 
 router = APIRouter()
-
+# TODO : ne pas pouvoir send de nouveaux messages avant avoir répondu quelque part
 
 @router.get("/send/{player_name}", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
 def send_next_message(player_name: str):
@@ -75,23 +75,25 @@ def get_full_history(player_name :str, channel_name :str) -> List[Message]: #get
         messages_history.extend(get_messages(messages, channel_name, choices_history))
     messages_history.extend(get_last_messages(player_name,channel_name))
     return messages_history
-    #TODO : need get messages pendant un choix meme si il n'est pas résolu encore
 
-
-@router.get("/history/end/{player_name}")
+@router.get("/end/{player_name}")
 def end_chatroom(player_name: str):
-    current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]
+    player = gamestates_collection.find_one({"name": player_name})
+    chatroom_id = player.get("current_chatroom_id", 0)
     gamestates_collection.update_one(
         {"name": player_name},
         {
             "$set": {
-                "current_chatroom_id": current_chatroom_id + 1,
+                "current_chatroom_id": chatroom_id + 1,
                 "current_message_id": 0,
                 "id_of_last_choice": 0
             }
         }
     )
-    return {"message": f"Player {player_name} has ended chatroom {current_chatroom_id}."}
+    return {"message": f"Player {player_name} has ended chatroom {chatroom_id}."}
+
+
+
 
 def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoie les messages après le dernier choix jusqu'au message actuel dans la sauvegarde
     current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]
@@ -108,7 +110,6 @@ def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoi
                 messages_after_choice.append(Message(character=message["character"], content=message["content"], channel=message["channel"] ))
             else:
                 messages_after_choice.append(Message(character=message["character"], choices=message["choices"], channel=message["channel"] ))
-            #Eventuellement a decommenter un jour mais imo un message du player doit jamais etre envoyé avant d'avoir répondu
         count+=1
     return messages_after_choice
 

@@ -73,3 +73,11 @@ def get_player_choices(player_name: str):
     if not isinstance(history, list):
         history = []
     return {"player_name": player_name, "choices_history": history}
+
+@router.get("/chatroom_id/{player_name}")
+def get_player_chatroom_id(player_name: str):
+    player = gamestates_collection.find_one({"name": player_name})
+    if not player:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
+    chatroom_id = player.get("current_chatroom_id", 0)
+    return {"player_name": player_name, "chatroom_id": chatroom_id} 
