@@ -21,9 +21,9 @@ const characterStore = useCharacterStore();
       <v-spacer />
         <v-btn size="45" class="ma-1" icon="mdi-pause" @click="conversationStore.new_message('A','Arthur')">
         </v-btn>
-        <v-btn size="45" class="ma-1" icon="mdi-fast-forward">
+        <v-btn size="45" class="ma-1" icon="mdi-fast-forward" >
         </v-btn>
-        <v-btn size="45" class="ma-1" icon="mdi-skip-backward">
+        <v-btn size="45" class="ma-1" icon="mdi-skip-backward" @click="conversationStore.reset_history('A')">
         </v-btn>
     </v-app-bar>
       <Message />

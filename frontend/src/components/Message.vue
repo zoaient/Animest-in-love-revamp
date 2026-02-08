@@ -8,7 +8,7 @@ const conversationStore = useConversationStore();
 const selectedCharacter = computed(() => characterStore.selectedCharacter);
 
 const history = computed(() => conversationStore.history);
-const currentChannel = computed(() => selectedCharacter.value?.name ?? null);
+const currentChannel = computed(() => selectedCharacter.value?.name ?? "Arthur"); // hardcodé
 const filteredHistory = computed(() => {
   if (!currentChannel.value) return history.value;
   return history.value.filter(m => m.channel === currentChannel.value);
@@ -25,6 +25,12 @@ const scrollToBottom = () => {
     characterStore.fetchCharacters();
   }
 };
+
+const lastMessage = computed(() => {
+  const arr = filteredHistory.value;
+  return arr && arr.length ? arr[arr.length - 1] : null;
+});
+
 
 watch(history, () => {
   nextTick(() => {
@@ -50,7 +56,7 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
 onMounted(() => {
   conversationStore.fetchHistory('A', 'Arthur').then(() => {
     scrollToBottom();
-  });
+  });//TODO : afficher la réponse du joueur qu'apres qu'il ait répondu (duh)
 });
 </script>
 
@@ -60,7 +66,7 @@ onMounted(() => {
     <div class="chat-container d-flex flex-column fill-height">
       <div class="messages-list flex-grow-1" ref="messagesContainerRef">
         <v-list lines="three" class="bg-transparent ">
-          <v-list-item v-for="message in filteredHistory" :key="message.id" class="message-item">
+          <v-list-item v-for="message in filteredHistory" :key="message.id" class="message-item"> 
             <template v-slot:prepend>
               <v-avatar color="primary" :image="characters[message.character]?.picture">
               </v-avatar>
@@ -76,6 +82,13 @@ onMounted(() => {
         </v-list>
       </div>
     </div>
+      <div v-if="lastMessage && lastMessage.choices && lastMessage.choices.length" class="bottom-choices pa-2">
+        <v-row justify="center">
+          <v-btn v-for="choice in lastMessage.choices" :key="choice.id" class="ma-1" @click="conversationStore.send_choice('A', lastMessage.channel ?? currentChannel.value, choice.id,choice.text)">
+              {{ choice.text }}
+          </v-btn>
+        </v-row>
+      </div>
   </v-container>
 </v-main>
 </template>

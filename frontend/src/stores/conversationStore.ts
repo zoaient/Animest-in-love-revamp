@@ -60,16 +60,17 @@ export const useConversationStore = defineStore('conversation', {
 
         const character = (payload && payload.character) ? payload.character : 'System';
         const choices = payload?.choices ?? null;
+        const channel = payload?.channel ?? null;
 
         const finalMsg: Message = {
           id: Date.now(),
           character,
           content,
           choices,
-          channel: payload?.channel ?? channel_name,
+          channel,
     
         };
-        //TODO gérer gerer le cas player et le systeme de notifications 
+        //TODO mieux gérer gerer le cas player et le systeme de notifications 
 
         const idx = this.history.findIndex(m => m.id === tempId);
         if (idx !== -1) {
@@ -87,6 +88,39 @@ export const useConversationStore = defineStore('conversation', {
       } finally {
         this.isLoading = false;
       }
+    },
+    async reset_history(player_name: string){
+      this.isLoading = true;
+      try {
+        await axios.get(`/api/reset/${player_name}`);
+        this.history = [];
+      } catch (error) {
+        console.error("Erreur lors de la réinitialisation de l'historique:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async send_choice(player_name: string, channel_name: string, answer : number, choice_text?: string){
+      this.isLoading=true;
+      const playerMsg: Message = {
+        id: Date.now(),
+        character: 'Player',
+        content: choice_text ?? String(answer),
+        choices: null,
+        channel: channel_name,
+      };
+      this.history.push(playerMsg);
+      try{
+        await axios.get(`/api/recv/${player_name}/${channel_name}/${answer}`);
+        await this.fetchHistory(player_name, channel_name)
+      }catch(error){
+        const idx = this.history.findIndex(m => m.id === playerMsg.id);
+        if (idx !== -1) this.history.splice(idx, 1);
+        throw error;
+      }finally{
+        this.isLoading=false;
+      }
     }
   }
+
 });

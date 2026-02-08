@@ -75,7 +75,7 @@ def get_full_history(player_name :str, channel_name :str) -> List[Message]: #get
         messages_history.extend(get_messages(messages, channel_name, choices_history))
     messages_history.extend(get_last_messages(player_name,channel_name))
     return messages_history
-
+    #TODO : need get messages pendant un choix meme si il n'est pas résolu encore
 
 
 @router.get("/history/end/{player_name}")
