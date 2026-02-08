@@ -9,10 +9,23 @@ const selectedCharacter = computed(() => characterStore.selectedCharacter);
 
 const history = computed(() => conversationStore.history);
 const currentChannel = computed(() => selectedCharacter.value?.name ?? "Arthur"); // hardcodé
-const filteredHistory = computed(() => {
+const channelHistory = computed(() => {
   if (!currentChannel.value) return history.value;
-  return history.value.filter(m => m.channel === currentChannel.value);
+  return history.value.filter(m => m.channel === currentChannel.value); 
 });
+
+const filteredHistory = computed(() => { // pas extremement fiere de ce fix mais pour l'instant ca fait
+  return channelHistory.value.filter(m => {
+    const hasNoContent = m.content === null || m.content === undefined || m.content === "";
+    const isTechnicalError = m.content === "[object Object]";
+    return !hasNoContent && !isTechnicalError;
+  });
+});
+
+watch(filteredHistory, (newValue) => {
+  console.log("History a changé :", newValue);
+}, { deep: true });
+
 
 const characters = computed(() => characterStore.characterMap);
 const messagesContainerRef = ref<HTMLDivElement | null>(null); 
@@ -27,7 +40,7 @@ const scrollToBottom = () => {
 };
 
 const lastMessage = computed(() => {
-  const arr = filteredHistory.value;
+  const arr = channelHistory.value;
   return arr && arr.length ? arr[arr.length - 1] : null;
 });
 
@@ -56,7 +69,7 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
 onMounted(() => {
   conversationStore.fetchHistory('A', 'Arthur').then(() => {
     scrollToBottom();
-  });//TODO : afficher la réponse du joueur qu'apres qu'il ait répondu (duh)
+  });
 });
 </script>
 

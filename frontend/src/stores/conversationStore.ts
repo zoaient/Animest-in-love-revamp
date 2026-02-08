@@ -56,7 +56,7 @@ export const useConversationStore = defineStore('conversation', {
         const content: string =
           typeof payload === 'string'
             ? payload
-            : (payload?.content ?? String(payload ?? ''));
+            : (payload?.content ?? "");
 
         const character = (payload && payload.character) ? payload.character : 'System';
         const choices = payload?.choices ?? null;
@@ -71,8 +71,16 @@ export const useConversationStore = defineStore('conversation', {
     
         };
         //TODO mieux gérer gerer le cas player et le systeme de notifications 
-
+        
         const idx = this.history.findIndex(m => m.id === tempId);
+
+        if (character === 'player') {
+          if (idx !== -1) {
+            this.history.splice(idx, 1);
+          }
+          return finalMsg; 
+        } 
+    
         if (idx !== -1) {
           this.history.splice(idx, 1, finalMsg);
         } else {
@@ -104,7 +112,7 @@ export const useConversationStore = defineStore('conversation', {
       this.isLoading=true;
       const playerMsg: Message = {
         id: Date.now(),
-        character: 'Player',
+        character: 'Playerrr',
         content: choice_text ?? String(answer),
         choices: null,
         channel: channel_name,

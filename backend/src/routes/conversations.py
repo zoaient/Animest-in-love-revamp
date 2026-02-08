@@ -104,7 +104,11 @@ def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoi
     for message in chatroom_messages:
         if message["channel"] == channel_name and count> id_of_last_choice-1 and count <= current_message_id-1 and (message["branch"] == last_choice or message["branch"] == 0):
             print(message)
-            messages_after_choice.append(Message(character=message["character"], content=message["content"], channel=message["channel"] ))
+            if message.get("content") is not None: 
+                messages_after_choice.append(Message(character=message["character"], content=message["content"], channel=message["channel"] ))
+            else:
+                messages_after_choice.append(Message(character=message["character"], choices=message["choices"], channel=message["channel"] ))
+            #Eventuellement a decommenter un jour mais imo un message du player doit jamais etre envoyé avant d'avoir répondu
         count+=1
     return messages_after_choice
 
