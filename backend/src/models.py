@@ -50,5 +50,6 @@ class Message(BaseModel):
     channel: str | None = None
     choices: list[Answer] | None = None
 
-
-
+class UserRegister(BaseModel):
+    username: str
+    password: str

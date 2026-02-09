@@ -1,14 +1,15 @@
-from fastapi import APIRouter , HTTPException, status
+from fastapi import APIRouter , HTTPException, status , Depends
 from typing import List
 from src.db import messages_collection , gamestates_collection
 from src.models import Message
 from pymongo import ReturnDocument
+from src.routes.login import get_current_user
 
 router = APIRouter()
 # TODO : ne pas pouvoir send de nouveaux messages avant avoir répondu quelque part
 
 @router.get("/send/{player_name}", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
-def send_next_message(player_name: str):
+def send_next_message(player_name: str = Depends(get_current_user)):
     current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]
     current_message_id = gamestates_collection.find_one({"name": player_name})["current_message_id"]
     chatroom_messages = get_chatroom_messages(current_chatroom_id)
@@ -39,7 +40,7 @@ def increment_current_message_id(player_name: str):
     )
 
 @router.get("/recv/{player_name}/{channel_name}/{answer}")
-def receive_player_answer(player_name: str, channel_name:str, answer :int):
+def receive_player_answer(channel_name:str, answer :int ,player_name: str = Depends(get_current_user)):
     player = gamestates_collection.find_one({"name": player_name})
     if not player:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
@@ -65,7 +66,7 @@ def receive_player_answer(player_name: str, channel_name:str, answer :int):
 
 
 @router.get("/history/{player_name}/{channel_name}", response_model=List[Message])
-def get_full_history(player_name :str, channel_name :str) -> List[Message]: #get de tout les messages d'une conversation donnée jusqu'au dernier choix.
+def get_full_history(channel_name :str, player_name :str = Depends(get_current_user)) -> List[Message]: #get de tout les messages d'une conversation donnée jusqu'au dernier choix.
     print(player_name, channel_name)
     player_history = get_player_history(player_name)
     messages_history: List[Message] = []
@@ -77,7 +78,7 @@ def get_full_history(player_name :str, channel_name :str) -> List[Message]: #get
     return messages_history
 
 @router.get("/end/{player_name}")
-def end_chatroom(player_name: str):
+def end_chatroom(player_name: str = Depends(get_current_user)):
     player = gamestates_collection.find_one({"name": player_name})
     chatroom_id = player.get("current_chatroom_id", 0)
     gamestates_collection.update_one(

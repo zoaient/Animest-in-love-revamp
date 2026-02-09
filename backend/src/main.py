@@ -6,7 +6,7 @@ origins = [
     "http://localhost:5174", 
     "http://localhost:8080", 
 ]
-from src.routes import characters , conversations , player
+from src.routes import characters , conversations , player , login
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,6 +33,12 @@ app.include_router(
     player.router,
     prefix="/api",
     tags=["Player"]
+)
+
+app.include_router(
+    login.router,
+    prefix="/api",
+    tags=["Login"]
 )
 
 @app.get("/")

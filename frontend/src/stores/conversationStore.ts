@@ -22,10 +22,10 @@ export const useConversationStore = defineStore('conversation', {
     isFinished: false,
   }),
   actions: {
-    async fetchHistory(player_name: string, channel_name: string) {
+    async fetchHistory(channel_name: string) {
       this.isLoading = true;
       try {
-        const response = await axios.get(`/api/history/${player_name}/${channel_name}`);
+        const response = await axios.get(`/api/history/${channel_name}`);
         this.history = response.data;
       } catch (error) {
         console.error("Erreur lors du chargement de l'historique:", error);
@@ -33,14 +33,11 @@ export const useConversationStore = defineStore('conversation', {
         this.isLoading = false;
       }
     },
-    playerMadeChoice(choice: Choice) { //faudra virer ça un jour
-      console.log(`Le joueur a choisi : "${choice.text}" (ID: ${choice.id})`);
-    },
     clearConversation() {
       this.history = [];
       this.isFinished = false;
     },
-    async new_message(player_name: string, channel_name: string) {
+    async new_message(channel_name: string) {
       this.isLoading = true;
       this.isFinished = false;
       const tempId = Date.now();
@@ -54,7 +51,7 @@ export const useConversationStore = defineStore('conversation', {
       this.history.push(tempMsg);
 
       try {
-        const response = await axios.get(`/api/send/${player_name}`);
+        const response = await axios.get(`/api/send/`);
         const payload = response.data;
         const content: string =
           typeof payload === 'string'
@@ -104,10 +101,10 @@ export const useConversationStore = defineStore('conversation', {
         this.isLoading = false;
       }
     },
-    async reset_history(player_name: string){
+    async reset_history(){
       this.isLoading = true;
       try {
-        await axios.get(`/api/reset/${player_name}`);
+        await axios.get(`/api/reset/`);
         this.history = [];
       } catch (error) {
         console.error("Erreur lors de la réinitialisation de l'historique:", error);
@@ -115,7 +112,7 @@ export const useConversationStore = defineStore('conversation', {
         this.isLoading = false;
       }
     },
-    async send_choice(player_name: string, channel_name: string, answer : number, choice_text?: string){
+    async send_choice(channel_name: string, answer : number, choice_text?: string){
       this.isLoading=true;
       const playerMsg: Message = {//peut etre totalement inutile, a voir.
         id: Date.now(),
@@ -126,8 +123,8 @@ export const useConversationStore = defineStore('conversation', {
       };
       this.history.push(playerMsg);
       try{
-        await axios.get(`/api/recv/${player_name}/${channel_name}/${answer}`);
-        await this.fetchHistory(player_name, channel_name)
+        await axios.get(`/api/recv/${channel_name}/${answer}`);
+        await this.fetchHistory(channel_name)
       }catch(error){
         const idx = this.history.findIndex(m => m.id === playerMsg.id);
         if (idx !== -1) this.history.splice(idx, 1);
@@ -136,10 +133,10 @@ export const useConversationStore = defineStore('conversation', {
         this.isLoading=false;
       }
     },
-    async end_conversation(player_name: string){
+    async end_conversation(){
       this.isLoading=true;
       try{
-        await axios.get(`/api/end/${player_name}`);
+        await axios.get(`/api/end/`);
         this.isFinished = false;
       }catch(error){
         console.error("Erreur lors de la fin de la conversation:", error);
