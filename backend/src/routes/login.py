@@ -11,7 +11,7 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 
 
-SECRET_KEY = "EFHEIORFHUEZIHSZOCHJZOEIHF"
+SECRET_KEY = "EFHEIORFHUEZIHSZOCHJZOEIHF" 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 360
 
@@ -81,6 +81,7 @@ async def register(user_data: UserRegister):
     login_collection.insert_one(new_user)
     gamestates_collection.insert_one({
         "name": user_data.username,
+        "profile_picture": "none", #TODO mettre la route de la pp par défaut
         "current_chatroom_id": 1,
         "current_message_id": 0,
         "id_of_last_choice": 0,

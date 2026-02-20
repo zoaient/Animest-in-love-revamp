@@ -8,7 +8,7 @@ from src.routes.login import get_current_user
 router = APIRouter()
 # TODO : ne pas pouvoir send de nouveaux messages avant avoir répondu quelque part
 
-@router.get("/send/{player_name}", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
+@router.get("/send", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
 def send_next_message(player_name: str = Depends(get_current_user)):
     current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]
     current_message_id = gamestates_collection.find_one({"name": player_name})["current_message_id"]
@@ -39,7 +39,7 @@ def increment_current_message_id(player_name: str):
             return_document=ReturnDocument.AFTER
     )
 
-@router.get("/recv/{player_name}/{channel_name}/{answer}")
+@router.get("/recv/{channel_name}/{answer}")
 def receive_player_answer(channel_name:str, answer :int ,player_name: str = Depends(get_current_user)):
     player = gamestates_collection.find_one({"name": player_name})
     if not player:
@@ -65,7 +65,7 @@ def receive_player_answer(channel_name:str, answer :int ,player_name: str = Depe
     gamestates_collection.update_one({"name": player_name}, {"$set": {"id_of_last_choice": new_last_choice_id}})
 
 
-@router.get("/history/{player_name}/{channel_name}", response_model=List[Message])
+@router.get("/history/{channel_name}", response_model=List[Message])
 def get_full_history(channel_name :str, player_name :str = Depends(get_current_user)) -> List[Message]: #get de tout les messages d'une conversation donnée jusqu'au dernier choix.
     print(player_name, channel_name)
     player_history = get_player_history(player_name)
@@ -77,7 +77,7 @@ def get_full_history(channel_name :str, player_name :str = Depends(get_current_u
     messages_history.extend(get_last_messages(player_name,channel_name))
     return messages_history
 
-@router.get("/end/{player_name}")
+@router.get("/end")
 def end_chatroom(player_name: str = Depends(get_current_user)):
     player = gamestates_collection.find_one({"name": player_name})
     chatroom_id = player.get("current_chatroom_id", 0)

@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async login(username : string, password : string) {
+      console.log("coucou");
       const formData = new FormData();
       formData.append('username', username);
       formData.append('password', password);

@@ -1,10 +1,12 @@
 <script setup>
-import { VNavigationDrawer,VList, VListItem} from 'vuetify/components';
+import { VNavigationDrawer} from 'vuetify/components';
 import { ref } from 'vue';
 const drawer = ref(null);
 const logoUrl = new URL('../assets/Logo/animest_logo.png', import.meta.url).href;
 const pfpUrl = new URL('../assets/Pfp/zouaient.jpg', import.meta.url).href;
 import Contacts from './Contacts.vue';
+import { useAuthStore } from '@/stores/authStore';
+const authStore = useAuthStore();
 </script>
 
 <template> 
@@ -21,7 +23,7 @@ import Contacts from './Contacts.vue';
             </v-img>
           </v-avatar>
           <div class="user-info flex-grow-1">
-            <div class="font-weight-bold text-subtitle-1">Zouaient</div>
+            <div class="font-weight-bold text-subtitle-1">{{ authStore.username }}</div>
             <div class="text-caption text-grey">En ligne</div>
           </div>
           <v-btn icon="$vuetify" variant="text" size="small"></v-btn>

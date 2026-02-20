@@ -51,7 +51,7 @@ export const useConversationStore = defineStore('conversation', {
       this.history.push(tempMsg);
 
       try {
-        const response = await axios.get(`/api/send/`);
+        const response = await axios.get(`/api/send`);
         const payload = response.data;
         const content: string =
           typeof payload === 'string'
@@ -104,7 +104,7 @@ export const useConversationStore = defineStore('conversation', {
     async reset_history(){
       this.isLoading = true;
       try {
-        await axios.get(`/api/reset/`);
+        await axios.get(`/api/reset`);
         this.history = [];
       } catch (error) {
         console.error("Erreur lors de la réinitialisation de l'historique:", error);
@@ -136,7 +136,7 @@ export const useConversationStore = defineStore('conversation', {
     async end_conversation(){
       this.isLoading=true;
       try{
-        await axios.get(`/api/end/`);
+        await axios.get(`/api/end`);
         this.isFinished = false;
       }catch(error){
         console.error("Erreur lors de la fin de la conversation:", error);

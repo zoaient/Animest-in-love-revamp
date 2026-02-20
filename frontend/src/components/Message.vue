@@ -2,7 +2,8 @@
 import { ref, watch, nextTick, onMounted, computed } from 'vue'; 
 import { useConversationStore } from '@/stores/conversationStore';
 import { useCharacterStore } from '@/stores/characterStore'
-
+import { useAuthStore } from '@/stores/authStore';
+const authStore = useAuthStore();
 const isFinished = computed  (()=> conversationStore.isFinished);
 const characterStore = useCharacterStore();
 const conversationStore = useConversationStore();
@@ -15,7 +16,7 @@ const channelHistory = computed(() => {
   return history.value.filter(m => m.channel === currentChannel.value); 
 });
 
-const filteredHistory = computed(() => { // pas extremement fiere de ce fix mais pour l'instant ca fait
+const filteredHistory = computed(() => { // pas extremement fiere de ce fix mais pour l'instant ca fait le taff
   return channelHistory.value.filter(m => {
     const hasNoContent = m.content === null || m.content === undefined || m.content === "";
     const isTechnicalError = m.content === "[object Object]";
@@ -59,7 +60,7 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
   
   if (newCharacter) {
     console.log(`Le personnage sélectionné a changé pour : ${newCharacter.name}. Chargement de son historique...`);
-    conversationStore.fetchHistory('A',newCharacter.name).then(() => {
+    conversationStore.fetchHistory(newCharacter.name).then(() => {
       scrollToBottom();
     });
   } else {
@@ -68,7 +69,7 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
 }, { immediate: true }); 
 
 onMounted(() => {
-  conversationStore.fetchHistory('A', 'Arthur').then(() => {
+  conversationStore.fetchHistory('Arthur').then(() => {
     scrollToBottom();
   });
 });
@@ -86,8 +87,12 @@ onMounted(() => {
               </v-avatar>
             </template>
             <v-list-item-title class="font-weight-bold">
-              {{ message.character }}
-              <span class="text-caption text-grey ml-2">10h23</span>
+              <div v-if="message.character!=='Player'">
+                {{ message.character }}
+              </div>
+              <div v-else>
+                {{authStore.username}}
+              </div>
             </v-list-item-title>
             <v-list-item-subtitle class="message-text">
               {{ message.content }}
@@ -99,7 +104,7 @@ onMounted(() => {
     </div>
       <div v-if="lastMessage && lastMessage.choices && lastMessage.choices.length" class="bottom-choices pa-2">
         <v-row justify="center">
-          <v-btn v-for="choice in lastMessage.choices" :key="choice.id" class="ma-1" @click="conversationStore.send_choice('A', lastMessage.channel ?? currentChannel.value, choice.id,choice.text)">
+          <v-btn v-for="choice in lastMessage.choices" :key="choice.id" class="ma-1" @click="conversationStore.send_choice(lastMessage.channel ?? currentChannel.value, choice.id,choice.text)">
               {{ choice.text }}
           </v-btn>
         </v-row>
@@ -110,7 +115,7 @@ onMounted(() => {
         <v-chip color="error" variant="outlined" class="mb-2">Fin de la conversation</v-chip>
       </v-row>
       <v-row justify="center">
-        <v-btn color="secondary" prepend-icon="mdi-check-all" @click="conversationStore.end_conversation('A')">
+        <v-btn color="secondary" prepend-icon="mdi-check-all" @click="conversationStore.end_conversation()">
           Terminer l'histoire
         </v-btn>
       </v-row>
