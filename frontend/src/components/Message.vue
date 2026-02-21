@@ -68,10 +68,13 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
   }
 }, { immediate: true }); 
 
-onMounted(() => {
+onMounted(async () => {
+  await conversationStore.fetchProfilePicture()
+  console.log("profile_picture",conversationStore.profilePicture)
   conversationStore.fetchHistory('Arthur').then(() => {
     scrollToBottom();
   });
+
 });
 </script>
 
@@ -83,7 +86,10 @@ onMounted(() => {
         <v-list lines="three" class="bg-transparent ">
           <v-list-item v-for="message in filteredHistory" :key="message.id" class="message-item"> 
             <template v-slot:prepend>
-              <v-avatar color="primary" :image="characters[message.character]?.picture">
+
+              <v-avatar v-if="message.character!=='Player'" color="primary" :image="characters[message.character]?.picture">
+              </v-avatar>
+              <v-avatar v-else color="primary" :image="conversationStore.profilePicture">
               </v-avatar>
             </template>
             <v-list-item-title class="font-weight-bold">

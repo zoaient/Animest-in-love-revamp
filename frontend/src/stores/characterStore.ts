@@ -45,11 +45,12 @@ export const useCharacterStore = defineStore('characters', {
       this.isLoading = true
       this.error = null
       try {
+        //pnjs
         const response = await axios.get('/api/characters')
         const fetchedCharacters = response.data as Character[];
         this.characters = fetchedCharacters.map(char => ({
           ...char,
-          resolvedPictureUrl: new URL(`../assets/${char.picture}`, import.meta.url).href
+          resolvedPictureUrl: new URL(`../assets/${char.picture}`, import.meta.url).href //TODO simplifier
         }));
       } catch (err) {
         console.error(err)

@@ -1,0 +1,1 @@
+L'idée je pense serait de renseigner branch et channel name que lorsque cela change, sinon ben ça change pas. Tant que player est mentionné on build ses réponses.

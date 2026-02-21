@@ -8,3 +8,6 @@ Dans le gamestate , il y'a autant de clés que de persos
 
 
 todo : taille responsive de header bisou
+ 
+
+ écran de présentation de tout les persos en mode deadlock la

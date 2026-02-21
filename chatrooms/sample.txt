@@ -1,0 +1,24 @@
+Nom : Test_convo_3
+Participants : Arthur, Katharine, Ivy, Oliver
+id : 2
+
+Channel : Arthur
+Arthur : comment ça va ?
+
+Ivy : Hello !!!!
+
+Ivy : Des gens sont la ? 
+
+Player : Oui moi ! ; +1 Arthur ; Eehehhehehehehe ; +1 Ivy
+
+Branch : 1
+Arthur : Trop cool !
+
+Arthur : Content que tu sois la, c'est sympa !
+
+Branch : 2
+Ivy : hehehehehehehehheeheheh
+
+Ivy : Et Arthur, comment il va ? 
+
+Arthur : ehhhh bah ça va !

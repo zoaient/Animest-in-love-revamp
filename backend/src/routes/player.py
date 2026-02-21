@@ -34,7 +34,7 @@ def reset_player_gamestate(player_name: str = Depends(get_current_user)):
         {"name": player_name},
         {
             "$set": {
-                "profile_picture" : "none",#TODO de meme route de pp de base
+                "profile_picture" : "src/assets/Pfp/katharine_pdp.png",
                 "current_chatroom_id": 1,
                 "current_message_id": 0,
                 "id_of_last_choice": 0,
@@ -96,7 +96,7 @@ def set_profile_picture(profile_picture: str,player_name: str = Depends(get_curr
             }
         }
     )
-    return {"message": f"Player {player_name} gamestate has been reset."}
+    return {"message": f"Player {player_name} profile picture has"}
 
 @router.get("/profile_picture")
 def get_profile_picture(player_name: str = Depends(get_current_user)):
@@ -104,4 +104,4 @@ def get_profile_picture(player_name: str = Depends(get_current_user)):
     if not player:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
     profile_picture = player.get("profile_picture", 0)
-    return {"player_name": player_name, "profile_picture": profile_picture} 
+    return {profile_picture} 

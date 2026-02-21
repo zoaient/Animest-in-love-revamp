@@ -1,12 +1,17 @@
 <script setup>
 import { VNavigationDrawer} from 'vuetify/components';
-import { ref } from 'vue';
-const drawer = ref(null);
-const logoUrl = new URL('../assets/Logo/animest_logo.png', import.meta.url).href;
-const pfpUrl = new URL('../assets/Pfp/zouaient.jpg', import.meta.url).href;
+import { ref ,onMounted} from 'vue';
 import Contacts from './Contacts.vue';
 import { useAuthStore } from '@/stores/authStore';
+import { useConversationStore } from '@/stores/conversationStore';
+const conversationStore = useConversationStore();
+const drawer = ref(null);
+const logoUrl = new URL('../assets/Logo/animest_logo.png', import.meta.url).href;
+
 const authStore = useAuthStore();
+onMounted(async () => {
+  await conversationStore.fetchProfilePicture()
+});
 </script>
 
 <template> 
@@ -18,9 +23,7 @@ const authStore = useAuthStore();
       <template v-slot:append>
         <v-divider></v-divider>
         <div class="profile-bar d-flex align-center pa-2">
-          <v-avatar size="40" class="mr-3">
-            <v-img :src="pfpUrl">
-            </v-img>
+          <v-avatar size="40" class="mr-3" :image="conversationStore.profilePicture">
           </v-avatar>
           <div class="user-info flex-grow-1">
             <div class="font-weight-bold text-subtitle-1">{{ authStore.username }}</div>

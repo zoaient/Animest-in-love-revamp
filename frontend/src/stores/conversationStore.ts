@@ -20,6 +20,7 @@ export const useConversationStore = defineStore('conversation', {
     history: [] as Message[],
     isLoading: false,
     isFinished: false,
+    profilePicture: "",
   }),
   actions: {
     async fetchHistory(channel_name: string) {
@@ -143,6 +144,10 @@ export const useConversationStore = defineStore('conversation', {
       }finally{
         this.isLoading=false;
       }
+    },
+    async fetchProfilePicture(){
+        const apiProfilePicture = await axios.get('/api/profile_picture')
+        this.profilePicture=apiProfilePicture.data[0];
     }
   }
 
