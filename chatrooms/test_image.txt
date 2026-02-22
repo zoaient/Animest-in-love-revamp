@@ -1,0 +1,16 @@
+Nom : Test_image
+Participants : Arthur, Katharine, Ivy, Oliver
+id : 2
+
+Channel : Ivy
+Arthur : Ivy va cuber très fort prochainement
+Arthur : ça arrive ...
+Arthur : ...
+Ivy : /src/assets/Misc/cubing.png
+Player : Incroyable je suis choquée ; +1 Arthur -1 Katharine ; Cubing. ; +1 Ivy
+
+Branch : 1
+Arthur : /src/assets/Misc/arthur_surpris.gif
+
+Branch : 2
+Ivy : hehehehehehehehheeheheh

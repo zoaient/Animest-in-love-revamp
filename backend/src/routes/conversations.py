@@ -8,6 +8,8 @@ from src.routes.login import get_current_user
 router = APIRouter()
 # TODO : ne pas pouvoir send de nouveaux messages avant avoir répondu quelque part
 # TODO : Failsafe si convo pas = 1
+# TODO : transformer les conversations en chatrooms pcq c'est intankable d'avoir deux noms
+# TODO : bugfix : j'arrive pas a fetch les messages post dernier choix d'une conversation terminée 
 
 @router.get("/send", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
 def send_next_message(player_name: str = Depends(get_current_user)):

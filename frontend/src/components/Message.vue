@@ -99,9 +99,11 @@ onMounted(async () => {
                 {{authStore.username}}
               </div>
             </v-list-item-title>
-            <v-list-item-subtitle class="message-text">
+            <v-list-item-subtitle v-if="message.content[0]!=='/'" class="message-text">
               {{ message.content }}
             </v-list-item-subtitle>         
+            <v-img v-else :src="message.content.slice(1)" max-width="300">
+            </v-img>
           </v-list-item>
         </v-list>
       </div>
