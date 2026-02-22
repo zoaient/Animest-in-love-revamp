@@ -7,6 +7,7 @@ from src.routes.login import get_current_user
 
 router = APIRouter()
 # TODO : ne pas pouvoir send de nouveaux messages avant avoir répondu quelque part
+# TODO : Failsafe si convo pas = 1
 
 @router.get("/send", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
 def send_next_message(player_name: str = Depends(get_current_user)):

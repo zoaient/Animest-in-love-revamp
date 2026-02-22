@@ -9,7 +9,7 @@ Ivy : Hello !!!!
 
 Ivy : Des gens sont la ? 
 
-Player : Oui moi ! ; +1 Arthur ; Eehehhehehehehe ; +1 Ivy
+Player : Oui moi ! ; +1 Arthur -1 Katharine ; Eehehhehehehehe ; +1 Ivy
 
 Branch : 1
 Arthur : Trop cool !

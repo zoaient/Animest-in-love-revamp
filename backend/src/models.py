@@ -40,9 +40,15 @@ class Character(BaseModel):
         populate_by_name = True
         json_encoders = {ObjectId: str}
 
+class Point(BaseModel):
+    value: int
+    receiver: str
+
+
 class Answer(BaseModel):
     id: int
     text: str
+    points : list[Point] | None = None
         
 class Message(BaseModel):
     character: str

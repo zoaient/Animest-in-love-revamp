@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 from src.db import messages_collection
-
 router = APIRouter()
 #../../chatrooms/sample.txt
 @router.get("/parse")
@@ -29,8 +28,17 @@ async def parse_conversation(filename : str):
             choices=[]
             for i in range(0,len(content),2):
                 text=content[i][1:-1]
-                points=content[i+1] #TODO : systeme de points
-                answer={"id": i//2+1, "text":text}
+                values=content[i+1].split()
+                points=[]
+                for j in range(0,len(values),2):
+                    value=int(values[j])
+                    print(value)
+                    receiver=values[j+1]
+                    point={"value":value,
+                            "receiver":receiver,
+                           }
+                    points.append(point)
+                answer={"id": i//2+1, "text":text,"points":points}
                 choices.append(answer)
 
             entry={"id":id,
