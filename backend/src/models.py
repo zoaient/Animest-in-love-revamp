@@ -59,3 +59,8 @@ class Message(BaseModel):
 class UserRegister(BaseModel):
     username: str
     password: str
+
+class FullAnswer(BaseModel):
+    channel_name : str
+    answer : int
+    points: list[Point] | None = None

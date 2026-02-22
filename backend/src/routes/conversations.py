@@ -1,7 +1,7 @@
 from fastapi import APIRouter , HTTPException, status , Depends
 from typing import List
 from src.db import messages_collection , gamestates_collection
-from src.models import Message
+from src.models import Message , FullAnswer
 from pymongo import ReturnDocument
 from src.routes.login import get_current_user
 
@@ -40,8 +40,11 @@ def increment_current_message_id(player_name: str):
             return_document=ReturnDocument.AFTER
     )
 
-@router.get("/recv/{channel_name}/{answer}")
-def receive_player_answer(channel_name:str, answer :int ,player_name: str = Depends(get_current_user)):
+@router.post("/recv")
+def receive_player_answer(data: FullAnswer,player_name: str = Depends(get_current_user)):
+    channel_name = data.channel_name
+    answer= data.answer
+    points=data.points
     player = gamestates_collection.find_one({"name": player_name})
     if not player:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Player gamestate not found")
@@ -64,11 +67,11 @@ def receive_player_answer(channel_name:str, answer :int ,player_name: str = Depe
 
     new_last_choice_id = gamestates_collection.find_one({"name": player_name})["current_message_id"]
     gamestates_collection.update_one({"name": player_name}, {"$set": {"id_of_last_choice": new_last_choice_id}})
+    update_scoreboard(points,player_name)
 
 
 @router.get("/history/{channel_name}", response_model=List[Message])
 def get_full_history(channel_name :str, player_name :str = Depends(get_current_user)) -> List[Message]: #get de tout les messages d'une conversation donnée jusqu'au dernier choix.
-    print(player_name, channel_name)
     player_history = get_player_history(player_name)
     messages_history: List[Message] = []
     for history in player_history:
@@ -107,7 +110,6 @@ def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoi
     last_choice = get_last_choice(player_name)
     for message in chatroom_messages:
         if message["channel"] == channel_name and count> id_of_last_choice-1 and count <= current_message_id-1 and (message["branch"] == last_choice or message["branch"] == 0):
-            print(message)
             if message.get("content") is not None: 
                 messages_after_choice.append(Message(character=message["character"], content=message["content"], channel=message["channel"] ))
             else:
@@ -124,7 +126,6 @@ def get_chatroom_messages(chatroom_id): # Renvoie tous les messages d'une chatro
 
 def get_choices_history(channel_name: str, choices: List[dict]) -> List[int]: #get l'historique des choix pour une conversation (enleve les choices qui ne sont pas liées a la conversation donnée)
     choices_history = []
-    print(choices)
     for choice in choices:
         if choice["channel"] == channel_name:
             choices_history.append(choice["choice"])
@@ -164,3 +165,16 @@ def get_last_choice(player_name: str) -> int:
 
 def is_text(content: str) -> bool: 
     return content.startswith("src/assets/")
+
+def update_scoreboard(points, player_name:str):
+    for point in points:
+        value=point.value
+        receiver=point.receiver
+        gamestates_collection.update_one(
+            {"name": player_name},
+            {
+                "$inc": {
+                    f"points.{receiver}": value
+                }
+            }
+        )

@@ -53,7 +53,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    print(form_data.username)
     user = login_collection.find_one({"username": form_data.username})
     if not user or not verify_password(form_data.password, user["hashed_password"]):
         raise HTTPException(
@@ -81,12 +80,12 @@ async def register(user_data: UserRegister):
     login_collection.insert_one(new_user)
     gamestates_collection.insert_one({
         "name": user_data.username,
-        "profile_picture": "none", #TODO mettre la route de la pp par défaut
+        "profile_picture": "src/assets/Pfp/diane_pdp.png",
         "current_chatroom_id": 1,
         "current_message_id": 0,
         "id_of_last_choice": 0,
         "history": [],
-        "points": []
+        "points": {}
     })
 
     return {"message": "Utilisateur créé avec succès !"}

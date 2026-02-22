@@ -70,7 +70,6 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
 
 onMounted(async () => {
   await conversationStore.fetchProfilePicture()
-  console.log("profile_picture",conversationStore.profilePicture)
   conversationStore.fetchHistory('Arthur').then(() => {
     scrollToBottom();
   });
@@ -110,7 +109,7 @@ onMounted(async () => {
     </div>
       <div v-if="lastMessage && lastMessage.choices && lastMessage.choices.length" class="bottom-choices pa-2">
         <v-row justify="center">
-          <v-btn v-for="choice in lastMessage.choices" :key="choice.id" class="ma-1" @click="conversationStore.send_choice(lastMessage.channel ?? currentChannel.value, choice.id,choice.text)">
+          <v-btn v-for="choice in lastMessage.choices" :key="choice.id" class="ma-1" @click="conversationStore.send_choice(lastMessage.channel ?? currentChannel.value, choice.id,choice.points , choice.text)">
               {{ choice.text }}
           </v-btn>
         </v-row>

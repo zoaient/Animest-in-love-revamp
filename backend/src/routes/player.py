@@ -34,7 +34,7 @@ def reset_player_gamestate(player_name: str = Depends(get_current_user)):
         {"name": player_name},
         {
             "$set": {
-                "profile_picture" : "src/assets/Pfp/katharine_pdp.png",
+                "profile_picture" : "src/assets/Pfp/diane_pdp.png",  
                 "current_chatroom_id": 1,
                 "current_message_id": 0,
                 "id_of_last_choice": 0,

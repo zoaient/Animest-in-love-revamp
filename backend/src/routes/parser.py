@@ -32,7 +32,6 @@ async def parse_conversation(filename : str):
                 points=[]
                 for j in range(0,len(values),2):
                     value=int(values[j])
-                    print(value)
                     receiver=values[j+1]
                     point={"value":value,
                             "receiver":receiver,

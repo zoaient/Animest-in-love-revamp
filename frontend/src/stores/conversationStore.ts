@@ -113,7 +113,7 @@ export const useConversationStore = defineStore('conversation', {
         this.isLoading = false;
       }
     },
-    async send_choice(channel_name: string, answer : number, choice_text?: string){
+    async send_choice(channel_name: string, answer : number, points : any,choice_text?: string){ //points : any j'suis po sure que ça soit le mieux cheffe
       this.isLoading=true;
       const playerMsg: Message = {//peut etre totalement inutile, a voir.
         id: Date.now(),
@@ -124,7 +124,12 @@ export const useConversationStore = defineStore('conversation', {
       };
       this.history.push(playerMsg);
       try{
-        await axios.get(`/api/recv/${channel_name}/${answer}`);
+        const full_answer={
+          channel_name: channel_name,
+          answer: answer,
+          points: points,
+        }
+        await axios.post(`/api/recv`,full_answer);
         await this.fetchHistory(channel_name)
       }catch(error){
         const idx = this.history.findIndex(m => m.id === playerMsg.id);

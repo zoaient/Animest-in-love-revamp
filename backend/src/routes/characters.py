@@ -8,6 +8,5 @@ router = APIRouter()
 @router.get("/characters", response_model=List[Character])
 def get_all_characters():
     characters = list(characters_collection.find({}))
-    print(characters)
     return characters
 
