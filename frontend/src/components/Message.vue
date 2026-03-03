@@ -4,7 +4,6 @@ import { useConversationStore } from '@/stores/conversationStore';
 import { useCharacterStore } from '@/stores/characterStore'
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
-import { convertTypeAcquisitionFromJson } from 'typescript';
 const authStore = useAuthStore();
 const isFinished = computed  (()=> conversationStore.isFinished);
 const characterStore = useCharacterStore();
@@ -66,7 +65,6 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
     return;
   }
   if (newCharacter) {
-    console.log(`Le personnage sélectionné a changé pour : ${newCharacter.name}. Chargement de son historique...`);
     conversationStore.fetchHistory(newCharacter.name).then(() => {
       scrollToBottom();
     });
@@ -118,7 +116,7 @@ onMounted(async () => {
     </div>
       <div v-if="lastMessage && lastMessage.choices && lastMessage.choices.length" class="bottom-choices pa-2">
         <v-row justify="center">
-          <v-btn v-for="choice in lastMessage.choices" :key="choice.id" class="ma-1" @click="conversationStore.send_choice(lastMessage.channel ?? currentChannel.value, choice.id,choice.points , choice.text)">
+          <v-btn v-for="choice in lastMessage.choices" :key="choice.id" class="ma-1" @click="conversationStore.send_choice(`Cinematic` , choice.id,choice.points , choice.text)">
               {{ choice.text }}
           </v-btn>
         </v-row>
