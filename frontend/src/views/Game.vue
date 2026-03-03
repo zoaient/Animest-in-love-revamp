@@ -19,11 +19,11 @@ const characterStore = useCharacterStore();
         </v-avatar>
       <v-toolbar-title>{{ characterStore.selectedCharacter?.name }}</v-toolbar-title>
       <v-spacer />
-        <v-btn size="45" class="ma-1" icon="mdi-pause" @click="conversationStore.new_message('A','Arthur')">
+        <v-btn size="45" class="ma-1" icon="mdi-pause" @click="conversationStore.new_message()">
         </v-btn>
         <v-btn size="45" class="ma-1" icon="mdi-fast-forward" >
         </v-btn>
-        <v-btn size="45" class="ma-1" icon="mdi-skip-backward" @click="conversationStore.reset_history('A')">
+        <v-btn size="45" class="ma-1" icon="mdi-skip-backward" @click="conversationStore.reset_history()">
         </v-btn>
     </v-app-bar>
       <Message />

@@ -21,6 +21,8 @@ export const useConversationStore = defineStore('conversation', {
     isLoading: false,
     isFinished: false,
     profilePicture: "",
+    roomType: "",
+    background: "",
   }),
   actions: {
     async fetchHistory(channel_name: string) {
@@ -29,7 +31,7 @@ export const useConversationStore = defineStore('conversation', {
         const response = await axios.get(`/api/history/${channel_name}`);
         this.history = response.data;
       } catch (error) {
-        console.error("Erreur lors du chargement de l'historique:", error);
+        console.error(error);
       } finally {
         this.isLoading = false;
       }
@@ -38,7 +40,7 @@ export const useConversationStore = defineStore('conversation', {
       this.history = [];
       this.isFinished = false;
     },
-    async new_message(channel_name: string) {
+    async new_message() {
       this.isLoading = true;
       this.isFinished = false;
       const tempId = Date.now();
@@ -47,7 +49,7 @@ export const useConversationStore = defineStore('conversation', {
         character: 'System',
         content: 'En attente...',
         choices: null,
-        channel: channel_name,
+        channel: 'System',
       };
       this.history.push(tempMsg);
 
@@ -108,7 +110,7 @@ export const useConversationStore = defineStore('conversation', {
         await axios.get(`/api/reset`);
         this.history = [];
       } catch (error) {
-        console.error("Erreur lors de la réinitialisation de l'historique:", error);
+        console.error(error);
       } finally {
         this.isLoading = false;
       }
@@ -145,14 +147,34 @@ export const useConversationStore = defineStore('conversation', {
         await axios.get(`/api/end`);
         this.isFinished = false;
       }catch(error){
-        console.error("Erreur lors de la fin de la conversation:", error);
+        console.error(error);
       }finally{
         this.isLoading=false;
       }
     },
     async fetchProfilePicture(){
+      try{
         const apiProfilePicture = await axios.get('/api/profile_picture')
         this.profilePicture=apiProfilePicture.data[0];
+      }catch(error){
+        console.error(error);
+      }
+    },
+    async getRoomType(){
+      try{
+        const roomType = await axios.get('/api/room_type')
+        this.roomType=roomType.data;
+      }catch(error){
+        console.error(error)
+      }
+    },
+    async getBackground(){
+      try{
+        const background = await axios.get('/api/background')
+        this.background=background.data.slice(1);
+      }catch(error){
+        console.error(error)
+      }
     }
   }
 

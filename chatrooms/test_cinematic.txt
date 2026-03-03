@@ -1,8 +1,9 @@
-Nom : Test_convo_3
+Nom : Test_Cinematic
 Participants : Arthur, Katharine, Ivy, Oliver
 id : 1
-Type : Chatroom
-Background : /src/assets/Misc/cubing.png
+Type : Cinematic
+Background : /src/assets/Backgrounds/fond_matin.jpg
+
 
 Channel : Arthur
 Arthur : comment ça va ?
@@ -25,9 +26,10 @@ Ivy : Et Arthur, comment il va ?
 
 Arthur : ehhhh bah ça va !
 Branch : 0
+Cinematic : /src/assets/Misc/cubing.png
 Player : aaawawawaw ; +1 Arthur ; Bwaaaaahhhhh ; +1 Ivy
 Branch : 1
-Ivy : ça va ?!œ
+Ivy : ça va ?!
 Branch : 2
 Arthur : ça va ?!
 

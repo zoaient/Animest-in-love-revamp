@@ -1,6 +1,8 @@
 Nom : Test_image
 Participants : Arthur, Katharine, Ivy, Oliver
 id : 2
+Type : Cinematic
+Background : /src/assets/Misc/cubing.png
 
 Channel : Ivy
 Arthur : Ivy va cuber très fort prochainement

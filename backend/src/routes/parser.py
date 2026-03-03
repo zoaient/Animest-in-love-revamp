@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from src.db import messages_collection
 router = APIRouter()
 #../../chatrooms/sample.txt
+#TODO quand pas de points sont accordés
 @router.get("/parse")
 async def parse_conversation(filename : str):
     with open(filename) as file:
@@ -10,11 +11,13 @@ async def parse_conversation(filename : str):
     chatroom_name=lines[0].split(":")[-1].lstrip() 
     characters=lines[1].split(":")[-1].split(",") #TODO : Pdp sur la convo ? 
     room_id=int(lines[2].split(":")[-1].lstrip())
+    room_type=lines[3].split(":")[-1].lstrip()
+    background=lines[4].split(":")[-1].lstrip()
     branch = 0
     channel = ""
     id=1
     messages=[]
-    del lines[0:3]
+    del lines[0:5]
     for line in lines:
         line_split = line.split(":")
         index = line_split[0].rsplit()[0]
@@ -60,7 +63,9 @@ async def parse_conversation(filename : str):
     chatroom={"id":room_id,
             "characters":characters,
             "chatroom_name":chatroom_name,
+            "room_type" : room_type,
             "messages":messages,
+            "background" : background,
             }
     
     messages_collection.insert_one(chatroom)

@@ -3,12 +3,14 @@ import { ref, watch, nextTick, onMounted, computed } from 'vue';
 import { useConversationStore } from '@/stores/conversationStore';
 import { useCharacterStore } from '@/stores/characterStore'
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'vue-router';
+import { convertTypeAcquisitionFromJson } from 'typescript';
 const authStore = useAuthStore();
 const isFinished = computed  (()=> conversationStore.isFinished);
 const characterStore = useCharacterStore();
 const conversationStore = useConversationStore();
 const selectedCharacter = computed(() => characterStore.selectedCharacter);
-
+const router = useRouter();
 const history = computed(() => conversationStore.history);
 const currentChannel = computed(() => selectedCharacter.value?.name ?? "Arthur"); // hardcodé
 const channelHistory = computed(() => {
@@ -23,6 +25,12 @@ const filteredHistory = computed(() => { // pas extremement fiere de ce fix mais
     return !hasNoContent && !isTechnicalError;
   });
 });
+
+
+const gotoMenu = async () => {
+  conversationStore.end_conversation()
+  router.push('/Menu'); 
+}
 
 watch(filteredHistory, (newValue) => {
   console.log("History a changé :", newValue);
@@ -57,7 +65,6 @@ watch(selectedCharacter, (newCharacter, oldCharacter) => {
   if (newCharacter?.name === oldCharacter?.name) {
     return;
   }
-  
   if (newCharacter) {
     console.log(`Le personnage sélectionné a changé pour : ${newCharacter.name}. Chargement de son historique...`);
     conversationStore.fetchHistory(newCharacter.name).then(() => {
@@ -122,7 +129,7 @@ onMounted(async () => {
         <v-chip color="error" variant="outlined" class="mb-2">Fin de la conversation</v-chip>
       </v-row>
       <v-row justify="center">
-        <v-btn color="secondary" prepend-icon="mdi-check-all" @click="conversationStore.end_conversation()">
+        <v-btn color="secondary" prepend-icon="mdi-check-all" @click="gotoMenu">
           Terminer l'histoire
         </v-btn>
       </v-row>

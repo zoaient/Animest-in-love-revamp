@@ -9,7 +9,7 @@ router = APIRouter()
 # TODO : ne pas pouvoir send de nouveaux messages avant avoir répondu quelque part
 # TODO : Failsafe si convo pas = 1
 # TODO : transformer les conversations en chatrooms pcq c'est intankable d'avoir deux noms
-# TODO : bugfix : j'arrive pas a fetch les messages post dernier choix d'une conversation terminée 
+# TODO : bugfix : j'arrive pas a fetch les messages post dernier choix d'une conversation terminée (update je crois que ça marche jsp)
 
 @router.get("/send", response_model=Message) #Envoi du prochain message a afficher qui est dans la bonne branche
 def send_next_message(player_name: str = Depends(get_current_user)):
@@ -99,8 +99,19 @@ def end_chatroom(player_name: str = Depends(get_current_user)):
     )
     return {"message": f"Player {player_name} has ended chatroom {chatroom_id}."}
 
+@router.get("/room_type")
+def get_room_type(player_name: str = Depends(get_current_user)):
+    player = gamestates_collection.find_one({"name": player_name})
+    chatroom_id  = player.get("current_chatroom_id",0)
+    room_type = messages_collection.find({"id":chatroom_id})[0]["room_type"]
+    return room_type
 
-
+@router.get("/background")
+def get_background(player_name: str = Depends(get_current_user)):
+    player = gamestates_collection.find_one({"name": player_name})
+    chatroom_id  = player.get("current_chatroom_id",0)
+    background = messages_collection.find({"id":chatroom_id})[0]["background"]
+    return background
 
 def get_last_messages(player_name: str, channel_name) -> List[Message]: # Renvoie les messages après le dernier choix jusqu'au message actuel dans la sauvegarde
     current_chatroom_id = gamestates_collection.find_one({"name": player_name})["current_chatroom_id"]

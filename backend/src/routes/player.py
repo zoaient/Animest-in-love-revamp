@@ -39,7 +39,7 @@ def reset_player_gamestate(player_name: str = Depends(get_current_user)):
                 "current_message_id": 0,
                 "id_of_last_choice": 0,
                 "history": [],
-                "points" : {},
+                "points" : {},  
             }
         }
     )

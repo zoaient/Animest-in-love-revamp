@@ -11,8 +11,7 @@ const password = ref('');
 const submit_login = async () => {
     try {
         await authStore.login(username.value, password.value);
-        console.log("Login");
-        router.push('/game'); 
+        router.push('/menu'); 
     } catch (error) {
         console.error("Erreur lors du login", error);
     }
